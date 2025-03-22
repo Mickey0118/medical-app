@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>精准医疗查询</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px;
+            font-size: 16px;
+        }
+        table {
+            width: 50%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>精准医疗查询</h1>
+    <p>请输入症状，然后点击查询</p>
+    
+    <input type="text" id="symptomInput" placeholder="输入症状，比如发烧">
+    <button onclick="searchDisease()">查询</button>
+
+    <h2>查询结果</h2>
+    <table id="resultTable">
+        <thead>
+            <tr>
+                <th>疾病</th>
+                <th>概率</th>
+            </tr>
+        </thead>
+        <tbody id="resultBody">
+        </tbody>
+    </table>
+
+    <script>
+        function searchDisease() {
+            let symptom = document.getElementById("symptomInput").value;
+            if (!symptom) {
+                alert("请输入症状！");
+                return;
+            }
+
+            let apiUrl = `http://127.0.0.1:8000/query?symptom=${encodeURIComponent(symptom)}`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    let resultBody = document.getElementById("resultBody");
+                    resultBody.innerHTML = ""; // 清空之前的查询结果
+
+                    if (data.length === 0) {
+                        resultBody.innerHTML = "<tr><td colspan='2'>没有找到相关疾病</td></tr>";
+                    } else {
+                        data.forEach(item => {
+                            let row = `<tr><td>${item.disease}</td><td>${(item.probability * 100).toFixed(2)}%</td></tr>`;
+                            resultBody.innerHTML += row;
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error("查询失败:", error);
+                    alert("查询失败，请检查API是否运行");
+                });
+        }
+    </script>
+
+</body>
+</html>
