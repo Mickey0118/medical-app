@@ -55,7 +55,7 @@
                 return;
             }
 
-            let apiUrl = `http://127.0.0.1:8000/query?symptom=${encodeURIComponent(symptom)}`;
+            let apiUrl = `https://medical-app-dy84.onrender.com/query?symptom=${encodeURIComponent(symptom)}`;
 
             fetch(apiUrl)
                 .then(response => response.json())
